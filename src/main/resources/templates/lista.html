@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <title>Lista de Produtos</title>
+    <style>
+        body { background: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        .box { background: #fff; border-radius: 10px; border: 1px solid #dee2e6; padding: 2rem; }
+        h1 { color: #343a40; }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="box shadow-sm">
+        <h1 class="mb-4">Lista de Produtos</h1>
+
+        <form th:action="@{/lista}" method="get" class="form-inline mb-3">
+            <input class="form-control mr-2" type="text" name="busca" th:value="${busca}" placeholder="Buscar por nome ou categoria">
+            <button class="btn btn-outline-primary mr-2" type="submit">Buscar</button>
+            <a th:href="@{/lista}" class="btn btn-outline-secondary">Limpar</a>
+        </form>
+
+        <div class="alert alert-info" th:if="${#lists.isEmpty(produtos)}">
+            Nenhum produto encontrado.
+        </div>
+
+        <table class="table table-striped" th:unless="${#lists.isEmpty(produtos)}">
+            <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Categoria</th>
+                <th>Estoque</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p, iterStat : ${produtos}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${p.nome}">Nome</td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(p.preco, 1, 'POINT', 2, 'COMMA')}">0,00</td>
+                <td th:text="${p.categoria}">Categoria</td>
+                <td th:text="${p.estoque}">0</td>
+                <td th:text="${p.descricao}">Descrição</td>
+                <td>
+                    <form th:action="@{/remover/{id}(id=${p.id})}" method="post">
+                        <button class="btn btn-sm btn-danger" type="submit">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="text-muted" th:unless="${#lists.isEmpty(produtos)}"
+           th:text="'Total: ' + ${produtos.size()} + ' produto(s)'"></p>
+
+        <a th:href="@{/cadastrar}" class="btn btn-primary">+ Cadastrar novo produto</a>
+    </div>
+</div>
+</body>
+</html>
